@@ -1,0 +1,28 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {}
+    },
+    "installed_plugins": {
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "com.dcss.TwitterPush"
+        },
+        "cordova-plugin-dialogs": {
+            "PACKAGE_NAME": "com.dcss.TwitterPush"
+        },
+        "cordova-plugin-inappbrowser": {
+            "PACKAGE_NAME": "com.dcss.TwitterPush"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "com.dcss.TwitterPush"
+        },
+        "phonegap-plugin-push": {
+            "SENDER_ID": "1020948189731",
+            "PACKAGE_NAME": "com.dcss.TwitterPush"
+        }
+    },
+    "dependent_plugins": {}
+}
