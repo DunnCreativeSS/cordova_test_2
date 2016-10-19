@@ -23,16 +23,6 @@
         "is_top_level": true,
         "variables": {}
     },
-    "phonegap-plugin-push": {
-        "source": {
-            "type": "registry",
-            "id": "phonegap-plugin-push@1.8.3"
-        },
-        "is_top_level": true,
-        "variables": {
-            "SENDER_ID": "1020948189731"
-        }
-    },
     "cordova-plugin-battery-status": {
         "source": {
             "type": "registry",
@@ -176,5 +166,15 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "phonegap-plugin-push": {
+        "source": {
+            "type": "local",
+            "path": "c:\\phonegap-plugin-push"
+        },
+        "is_top_level": true,
+        "variables": {
+            "SENDER_ID": "1020948189731"
+        }
     }
 }

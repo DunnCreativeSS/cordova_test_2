@@ -7,26 +7,10 @@
         "files": {}
     },
     "installed_plugins": {
-        "cordova-plugin-device": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-dialogs": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-inappbrowser": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "phonegap-plugin-push": {
-            "SENDER_ID": "1020948189731",
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
         "cordova-plugin-battery-status": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         },
         "cordova-plugin-camera": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-media-capture": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         },
         "cordova-plugin-console": {
@@ -35,10 +19,16 @@
         "cordova-plugin-contacts": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         },
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
         "cordova-plugin-device-motion": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         },
         "cordova-plugin-device-orientation": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "cordova-plugin-dialogs": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         },
         "cordova-plugin-file-transfer": {
@@ -50,7 +40,13 @@
         "cordova-plugin-globalization": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         },
+        "cordova-plugin-inappbrowser": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
         "cordova-plugin-media": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "cordova-plugin-media-capture": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         },
         "cordova-plugin-network-information": {
@@ -66,6 +62,10 @@
             "PACKAGE_NAME": "com.phonegap.helloworld"
         },
         "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "phonegap-plugin-push": {
+            "SENDER_ID": "1020948189731",
             "PACKAGE_NAME": "com.phonegap.helloworld"
         }
     },

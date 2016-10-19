@@ -18,8 +18,9 @@
     under the License.
 -->
 <html>
-    <head>
-        <!--
+
+<head>
+    <!--
         Customize this policy to fit your own app's needs. For more guidance, see:
             https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
         Some notes:
@@ -28,544 +29,570 @@
             * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
                 * Enable inline JS: add 'unsafe-inline' to default-src
         -->
-        <meta name="format-detection" content="telephone=no">
-        <meta name="msapplication-tap-highlight" content="no">
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
-        <link rel="stylesheet" type="text/css" href="css/index.css">
-		
-        <script type="text/javascript" src="cordova.js"></script>
-	<script src="https://rawgit.com/jublonet/codebird-js/develop/codebird.js"></script>
-  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script> 
-        <title>Twitter Push Notifications</title>
-    </head>
-    <body><script>
-	logOutLast = false;
-	function logout(which){
-$.get("http://dcssquared.com:69/logout/?screen_name=" + which + "&uuid=" + device.uuid, function(data, status){
-				console.log(data);
-				
-				
-$('#switches[data-name="' + which + '"]').remove();
-numAccounts = numAccounts - 1;
-console.log(which);
-var screens = JSON.parse(localStorage.getItem("screens"));
-for (var i=screens.length-1; i>=0; i--) {
-console.log(screens[i]);
-    if (screens[i] == which) {
-	console.log('screen: ' + i.toString() + ' == ' + which);
-        screens.splice(i, 1);
-		cb[i].logout();
-         break;       //<-- Uncomment  if only the first term has to be removed
-    }
-}
-localStorage.setItem("screens", JSON.stringify(screens));
-console.log('screens: ' + JSON.stringify(screens));
-if (screens.length == 0){
-console.log('logged out last. Setting logged out last true');
-logOutLast = true;
-}
-				});
-}
-function alertDismissed(data){
-//(data);
-}
-function parseText(text) {
-    var link = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-	var user = /@(\w+)/ig;
-	var hashTags = /#(\w+)/ig;
-	var desc = "";
-	if(link) {
-		desc = text.replace(link,'<a href="$1" target="_blank">$1</a>');
-	} if(user) {
-		desc = desc.replace(user,'<a href="https://twitter.com/$1" target="_blank">@$1</a>');
-	} if(hashTags) {
-		desc = desc.replace(hashTags,'<a href="https://twitter.com/search?q=%23$1" target="_blank">#$1</a>');
-	}
-	return desc;
-}
-		cb = [];
-			$('.checkboxxy').click(function () {
-										console.log('test');
-										$.get("http://dcssquared.com:69/updateUser/?uuid=" + device.uuid + "&screen_name=" + $(this).data("name")
-										+ "&" + $(this).attr('id') + "=" + ($(this).is(':checked')).toString())
-										, function(data, status){
-											//alert(data);
-											}
-										
-									});
-function addUser(screen_name){
-$.get("http://dcssquared.com:69/addUser/?accessToken=" + localStorage.getItem(screen_name + "-accessToken")
-				+ "&tokenSecret=" + localStorage.getItem(screen_name + "-tokenSecret")
-				+ "&user_id=" + localStorage.getItem(screen_name + "-user_id").toString()
-				+ "&screen_name=" + screen_name + "&uuid=" + device.uuid, function(data, status){
-				
-		$.get("http://dcssquared.com:69/getUser/?uuid=" + device.uuid + "&screen_name=" + screen_name, function success(data){
-		    
-			answer = data.split(","); 
-			$('#dmPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[1]));
-			$('#mentionsPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[2]));
-			$('#followersPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[3]));
-			$('#retweetedPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[4]));
-		
-			});
-				});
-				
-		}
-	function authorize(o) {
-	var currentUrl = o.url;
-	var query = currentUrl.match(/oauth_verifier(.+)/);
-   	for (var i = 0; i < query.length; i++) {
-    	parameter = query[i].split("=");
-    	if (parameter.length === 1) {
-        	parameter[1] = "";
-    	}
-	}
-	cb[JSON.parse(localStorage.getItem("screens")).length].__call(
-       	"oauth_accessToken", {oauth_verifier: parameter[1]},
-       	function (reply) {
-		    screen_name = reply.screen_name;
-    	   	cb[JSON.parse(localStorage.getItem("screens")).length].setToken(reply.oauth_token, reply.oauth_token_secret);
-			var screens = JSON.parse(localStorage.getItem("screens"));
-			console.log(typeof(screens));
-			screens.push(screen_name);
-			localStorage.setItem("screens", JSON.stringify(screens));
-           	localStorage.setItem(screen_name + "-accessToken", reply.oauth_token);
-			localStorage.setItem(screen_name + "-tokenSecret", reply.oauth_token_secret);
-			localStorage.setItem(screen_name + "-user_id", reply.user_id.toString());
-			localStorage.setItem(screen_name + "-screen_name", screen_name);
-			screens = JSON.parse(localStorage.getItem("screens"));
-								$.each(screens, function(key, value) {
-									console.log(key + ' ' + value);
-								});
-								screen = screens[screens.length - 1];
-								addUser(screen);
-								doPushes(screen);
-								if ((JSON.parse(localStorage.getItem("screens"))).length == 1){
-									console.log('screens 1');
-									if (logOutLast == true){
-										logOutLast = false;
-										
-									$('#mastaSwitches').append('<div id = "switches" style="display:none;">' + 
-            '<h1 id = "name">Twitter Push Notifications</h1>' + 
-			' Direct Message Push<label class="switch">' + 
-			'	 <input type="checkbox" id="dmPush" class="checkboxxy">' + 
-			'	  <div class="slider round"></div>' + 
-			'</label><br>' + 
-			'Mentions Push<label class="switch">' + 
-			'	 <input type="checkbox" id="mentionsPush" class="checkboxxy">' + 
-			'	  <div class="slider round"></div>' + 
-			'</label><br>' + 
-			'New Followers Push<label class="switch">' + 
-			'	 <input  type="checkbox" id="followersPush" class="checkboxxy">' + 
-			'	  <div class="slider round"></div>' + 
-			'</label><br>' + 
-			'Retweeted Push<label class="switch">' + 
-			'	 <input type="checkbox" id="retweetedPush" class="checkboxxy">' + 
-			'	  <div class="slider round"></div>' + 
-			'</label><br></div>');
-									}
-									$('#switches').show();
-									$('#switches:last').attr("data-name", screen );
-				$('#name:last').html("<h1>" + screen + "</h1><button onclick='logout(\"" + screen + "\");'>Log Out</button>");
-									$('#dmPush:last').attr("data-name", screen );
-									$('#mentionsPush:last').attr("data-name", screen );
-									$('#followersPush:last').attr("data-name", screen );
-									$('#retweetedPush:last').attr("data-name", screen );
-									
-								}
-		
-								else if ((JSON.parse(localStorage.getItem("screens"))).length > numAccounts){
-								console.log('append');
-									$('#switches').show();
-									numAccounts = screens.length;
-									$('#mastaSwitches').append($('#switches').clone());
-									
-				$('#name:last').html("<h1>" + screen + "</h1><button onclick='logout(\"" + screen + "\");'>Log Out</button>");
-									$('#switches:last').attr("data-name", screen );
-									$('#dmPush:last').attr("data-name", screen );
-									$('#mentionsPush:last').attr("data-name", screen );
-									$('#followersPush:last').attr("data-name", screen );
-									$('#retweetedPush:last').attr("data-name", screen );
-								}
-								else if ((JSON.parse(localStorage.getItem("screens"))).length < numAccounts){
-									$("#switches:last").remove();
-									for (var i=screens.length-1; i>=0; i--) {
-									console.log(screens[i]);
-										if (screens[i] == which) {
-										console.log('screen: ' + i.toString() + ' == ' + which);
-											screens.splice(i, 1);
-											cb[i].logout();
-											 break;       //<-- Uncomment  if only the first term has to be removed
-										}
-									}
-									numAccounts = screens.length;
-localStorage.setItem("screens", JSON.stringify(screens));
-console.log('screens: ' + JSON.stringify(screens));
-								}
-								
-			
-			cb[JSON.parse(localStorage.getItem("screens")).length - 1].__call(
-				"statuses_homeTimeline", {},
-				function (reply) {
-					for (var key in reply) {
-						$('#homeTimeline').append('<li><p>' + reply[key].user["screen_name"] +': ' + parseText(reply[key].text) +'</p></li>');
-					}
-				}						
-			);
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+
+    <script type="text/javascript" src="cordova.js"></script>
+    <script src="https://rawgit.com/jublonet/codebird-js/develop/codebird.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <title>Twitter Push Notifications</title>
+</head>
+
+<body>
+    <script>
+        logOutLast = false;
+
+        function logout(which) {
+            $.get("http://dcssquared.com:69/logout/?screen_name=" + which + "&uuid=" + device.uuid, function(data, status) {
+                console.log(data);
+
+
+                $('#switches[data-name="' + which + '"]').remove();
+                numAccounts = numAccounts - 1;
+                console.log(which);
+                var screens = JSON.parse(localStorage.getItem("screens"));
+                for (var i = screens.length - 1; i >= 0; i--) {
+                    console.log(screens[i]);
+                    if (screens[i] == which) {
+                        console.log('screen: ' + i.toString() + ' == ' + which);
+                        screens.splice(i, 1);
+                        cb[i].logout();
+                        break; //<-- Uncomment  if only the first term has to be removed
+                    }
+                }
+                localStorage.setItem("screens", JSON.stringify(screens));
+                console.log('screens: ' + JSON.stringify(screens));
+                if (screens.length == 0) {
+                    console.log('logged out last. Setting logged out last true');
+                    logOutLast = true;
+                }
+            });
         }
-    );
-    //fetchTweets(null);
-}
-	function addTwitter(){
-	
-cb[JSON.parse(localStorage.getItem("screens")).length] = new Codebird;
-			cb[JSON.parse(localStorage.getItem("screens")).length].setConsumerKey("c5HrynmWFPsMhKmgoIlEwhBzQ", "p0dV3idCA9RBk34m2ZhRZkxboca3e1ybPXkxfaBontdAvPUxMp");
 
-cb[JSON.parse(localStorage.getItem("screens")).length].__call(
-			"oauth_requestToken",
-    			{oauth_callback: "http://localhost/"},
-    			function (reply) {
-					// nailed it!
-    	   			cb[JSON.parse(localStorage.getItem("screens")).length].setToken(reply.oauth_token, reply.oauth_token_secret);
-    	   			cb[JSON.parse(localStorage.getItem("screens")).length].__call(
-        			"oauth_authorize",	{},
-        			function (auth_url) {
-        				var ref = window.open(auth_url, '_blank', 'location=no'); // redirection.
-        				// check if the location the phonegap changes to matches our callback url or not
-        				ref.addEventListener("loadstart", function(iABObject) {
-        					if(iABObject.url.match(/localhost/)) {
-        						ref.close();
-        						authorize(iABObject);
-								
-        					}
-        				});        					
-	       			}
-				);
-       		}
-		);
+        function alertDismissed(data) {
+            //(data);
+        }
 
-}	
-</script><div id = "mastaSwitches">
-        <div id = "switches" style="display:none;">
-            <h1 id = "name">Twitter Push Notifications</h1>
-			 Direct Message Push<label class="switch">
+        function parseText(text) {
+            var link = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+            var user = /@(\w+)/ig;
+            var hashTags = /#(\w+)/ig;
+            var desc = "";
+            if (link) {
+                desc = text.replace(link, '<a href="$1" target="_blank">$1</a>');
+            }
+            if (user) {
+                desc = desc.replace(user, '<a href="https://twitter.com/$1" target="_blank">@$1</a>');
+            }
+            if (hashTags) {
+                desc = desc.replace(hashTags, '<a href="https://twitter.com/search?q=%23$1" target="_blank">#$1</a>');
+            }
+            return desc;
+        }
+        cb = [];
+        $('.checkboxxy').click(function() {
+            console.log('test');
+            $.get("http://dcssquared.com:69/updateUser/?uuid=" + device.uuid + "&screen_name=" + $(this).data("name") +
+                    "&" + $(this).attr('id') + "=" + ($(this).is(':checked')).toString()),
+                function(data, status) {
+                    //alert(data);
+                }
+
+        });
+
+        function addUser(screen_name) {
+            $.get("http://dcssquared.com:69/addUser/?accessToken=" + localStorage.getItem(screen_name + "-accessToken") +
+                "&tokenSecret=" + localStorage.getItem(screen_name + "-tokenSecret") +
+                "&user_id=" + localStorage.getItem(screen_name + "-user_id").toString() +
+                "&screen_name=" + screen_name + "&uuid=" + device.uuid,
+                function(data, status) {
+
+                    $.get("http://dcssquared.com:69/getUser/?uuid=" + device.uuid + "&screen_name=" + screen_name, function success(data) {
+
+                        answer = data.split(",");
+                        $('#dmPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[1]));
+                        $('#mentionsPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[2]));
+                        $('#followersPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[3]));
+                        $('#retweetedPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[4]));
+
+                    });
+                });
+
+        }
+
+        function authorize(o) {
+            var currentUrl = o.url;
+            var query = currentUrl.match(/oauth_verifier(.+)/);
+            for (var i = 0; i < query.length; i++) {
+                parameter = query[i].split("=");
+                if (parameter.length === 1) {
+                    parameter[1] = "";
+                }
+            }
+            cb[JSON.parse(localStorage.getItem("screens")).length].__call(
+                "oauth_accessToken", {
+                    oauth_verifier: parameter[1]
+                },
+                function(reply) {
+                    screen_name = reply.screen_name;
+                    cb[JSON.parse(localStorage.getItem("screens")).length].setToken(reply.oauth_token, reply.oauth_token_secret);
+                    var screens = JSON.parse(localStorage.getItem("screens"));
+                    console.log(typeof(screens));
+                    screens.push(screen_name);
+                    localStorage.setItem("screens", JSON.stringify(screens));
+                    localStorage.setItem(screen_name + "-accessToken", reply.oauth_token);
+                    localStorage.setItem(screen_name + "-tokenSecret", reply.oauth_token_secret);
+                    localStorage.setItem(screen_name + "-user_id", reply.user_id.toString());
+                    localStorage.setItem(screen_name + "-screen_name", screen_name);
+                    screens = JSON.parse(localStorage.getItem("screens"));
+                    $.each(screens, function(key, value) {
+                        console.log(key + ' ' + value);
+                    });
+                    screen = screens[screens.length - 1];
+                    addUser(screen);
+                    doPushes(screen);
+                    if ((JSON.parse(localStorage.getItem("screens"))).length == 1) {
+                        console.log('screens 1');
+                        if (logOutLast == true) {
+                            logOutLast = false;
+
+                            $('#mastaSwitches').append('<div id = "switches" style="display:none;">' +
+                                '<h1 id = "name">Twitter Push Notifications</h1>' +
+                                ' Direct Message Push<label class="switch">' +
+                                '	 <input type="checkbox" id="dmPush" class="checkboxxy">' +
+                                '	  <div class="slider round"></div>' +
+                                '</label><br>' +
+                                'Mentions Push<label class="switch">' +
+                                '	 <input type="checkbox" id="mentionsPush" class="checkboxxy">' +
+                                '	  <div class="slider round"></div>' +
+                                '</label><br>' +
+                                'New Followers Push<label class="switch">' +
+                                '	 <input  type="checkbox" id="followersPush" class="checkboxxy">' +
+                                '	  <div class="slider round"></div>' +
+                                '</label><br>' +
+                                'Retweeted Push<label class="switch">' +
+                                '	 <input type="checkbox" id="retweetedPush" class="checkboxxy">' +
+                                '	  <div class="slider round"></div>' +
+                                '</label><br></div>');
+                        }
+                        $('#switches').show();
+                        $('#switches:last').attr("data-name", screen);
+                        $('#name:last').html("<h1>" + screen + "</h1><button onclick='logout(\"" + screen + "\");'>Log Out</button>");
+                        $('#dmPush:last').attr("data-name", screen);
+                        $('#mentionsPush:last').attr("data-name", screen);
+                        $('#followersPush:last').attr("data-name", screen);
+                        $('#retweetedPush:last').attr("data-name", screen);
+
+                    } else if ((JSON.parse(localStorage.getItem("screens"))).length > numAccounts) {
+                        console.log('append');
+                        $('#switches').show();
+                        numAccounts = screens.length;
+                        $('#mastaSwitches').append($('#switches').clone());
+
+                        $('#name:last').html("<h1>" + screen + "</h1><button onclick='logout(\"" + screen + "\");'>Log Out</button>");
+                        $('#switches:last').attr("data-name", screen);
+                        $('#dmPush:last').attr("data-name", screen);
+                        $('#mentionsPush:last').attr("data-name", screen);
+                        $('#followersPush:last').attr("data-name", screen);
+                        $('#retweetedPush:last').attr("data-name", screen);
+                    } else if ((JSON.parse(localStorage.getItem("screens"))).length < numAccounts) {
+                        $("#switches:last").remove();
+                        for (var i = screens.length - 1; i >= 0; i--) {
+                            console.log(screens[i]);
+                            if (screens[i] == which) {
+                                console.log('screen: ' + i.toString() + ' == ' + which);
+                                screens.splice(i, 1);
+                                cb[i].logout();
+                                break; //<-- Uncomment  if only the first term has to be removed
+                            }
+                        }
+                        numAccounts = screens.length;
+                        localStorage.setItem("screens", JSON.stringify(screens));
+                        console.log('screens: ' + JSON.stringify(screens));
+                    }
+
+
+                    cb[JSON.parse(localStorage.getItem("screens")).length - 1].__call(
+                        "statuses_homeTimeline", {},
+                        function(reply) {
+                            for (var key in reply) {
+                                $('#homeTimeline').append('<li><p>' + reply[key].user["screen_name"] + ': ' + parseText(reply[key].text) + '</p></li>');
+                            }
+                        }
+                    );
+                }
+            );
+            //fetchTweets(null);
+        }
+
+        function addTwitter() {
+
+            cb[JSON.parse(localStorage.getItem("screens")).length] = new Codebird;
+            cb[JSON.parse(localStorage.getItem("screens")).length].setConsumerKey("c5HrynmWFPsMhKmgoIlEwhBzQ", "p0dV3idCA9RBk34m2ZhRZkxboca3e1ybPXkxfaBontdAvPUxMp");
+
+            cb[JSON.parse(localStorage.getItem("screens")).length].__call(
+                "oauth_requestToken", {
+                    oauth_callback: "http://localhost/"
+                },
+                function(reply) {
+                    // nailed it!
+                    cb[JSON.parse(localStorage.getItem("screens")).length].setToken(reply.oauth_token, reply.oauth_token_secret);
+                    cb[JSON.parse(localStorage.getItem("screens")).length].__call(
+                        "oauth_authorize", {},
+                        function(auth_url) {
+                            var ref = window.open(auth_url, '_blank', 'location=no'); // redirection.
+                            // check if the location the phonegap changes to matches our callback url or not
+                            ref.addEventListener("loadstart", function(iABObject) {
+                                if (iABObject.url.match(/localhost/)) {
+                                    ref.close();
+                                    authorize(iABObject);
+
+                                }
+                            });
+                        }
+                    );
+                }
+            );
+
+        }
+    </script>
+    <div id="mastaSwitches">
+        <div id="switches" style="display:none;">
+            <h1 id="name">Twitter Push Notifications</h1>
+            Direct Message Push<label class="switch">
 				 <input type="checkbox" id="dmPush" class="checkboxxy">
 				  <div class="slider round"></div>
-			</label><br>
-			Mentions Push<label class="switch">
+			</label><br> Mentions Push<label class="switch">
 				 <input type="checkbox" id="mentionsPush" class="checkboxxy">
 				  <div class="slider round"></div>
-			</label><br>
-			New Followers Push<label class="switch">
+			</label><br> New Followers Push<label class="switch">
 				 <input  type="checkbox" id="followersPush" class="checkboxxy">
 				  <div class="slider round"></div>
-			</label><br>
-			Retweeted Push<label class="switch">
+			</label><br> Retweeted Push<label class="switch">
 				 <input type="checkbox" id="retweetedPush" class="checkboxxy">
 				  <div class="slider round"></div>
-			</label><br></div></div><button id ="addTwitterBtn" onclick="addTwitter();">Add a Twitter Account</button>
-			<div id = "result">
-			
-</div>
-		<div id="LoadMe">
-			<ul id="homeTimeline">
-			</ul>
-		</div>
-		<script>
-			$('a').click(function() {
-				loadOption($(this).attr('href'), $(ts).attr('id'));
-				return false;
-			});
-		</script>
-        </div>
-        <script type="text/javascript" src="js/index.js"></script>
-		<script>
-		screen_name = "";
-		numAccounts = 0;
-		
-		function screenDms(){
-			alert('dms');
-		}
-		function screenMentions(){
-			alert('mentions');
-		}
-		function doPushes(screen){
-								push = PushNotification.init({
-			android: {
-				senderID: "1020948189731"
-			},
-			"ios": {
-"senderID": "1020948189731",
-"gcmSandbox": true,
-"alert": "true", 
-"badge": "true", 
-"sound": "true"},
-			windows: {}
-		})
-		;/*
-		push.unregister(function success(data)
-		{
-		alert('unreg');
-		}, 
-		function(data){
-		alert('still reg ' + data);
-		}, 
-		"test");*/
-		done = false;
-		push.on('registration', function(data) {
-			console.log('registered screen: ' + screen + ' and reg: ' + data.registrationId);
-			if (done == false){
-			done = true;
-			
-		screens = JSON.parse(localStorage.getItem("screens"));
-			$.each(screens, function(key, value) {
-			
-			$.get("http://dcssquared.com:69/addUser/?reg=" + data.registrationId + "&uuid=" + device.uuid + "&screen_name=" + value, function success(data){
-			});
-			});
-			}
-		});
+			</label><br></div>
+    </div><button id="addTwitterBtn" onclick="addTwitter();">Add a Twitter Account</button>
+    <div id="result">
 
-		push.on('notification', function(data) {
-			//alert('datascreen:' + data.additionalData['screen']);
-			$.each(data.additionalData, function(key, value) {
-				//alert(key + ' ' + value);
-			});
-			if (data.additionalData['screen'] == 'mentions'){
-				//screenMentions();
-			}
-			else if (data.additionalData['screen'] == 'dms'){
-				//screenDms();
-			}
-			$('#result').prepend(data['title'] + ": " + data['message']);
-			navigator.notification.alert(
-				data['message'],  // message
-				alertDismissed,         // callback
-				"To: " + data.additionalData['to'] + ", " + data['title'],            // title
-				'w00t'                  // buttonName
-			);
-		});
+    </div>
+    <div id="LoadMe">
+        <ul id="homeTimeline">
+        </ul>
+    </div>
+    <script>
+        $('a').click(function() {
+            loadOption($(this).attr('href'), $(ts).attr('id'));
+            return false;
+        });
+    </script>
+    </div>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script>
+        screen_name = "";
+        numAccounts = 0;
 
-		push.on('error', function(e) {
-			$('#result').prepend( e.message );
-		});
-		}
-		function stringToBoolean(string){
-    switch(string.toLowerCase().trim()){
-        case "true": case "yes": case "1": return true;
-        case "false": case "no": case "0": case null: return false;
-        default: return Boolean(string);
-    }
-}
-function onDeviceReady (){
-console.log('ondeviceready fired');
+        function screenDms() {
+            alert('dms');
+        }
 
-		screens = JSON.parse(localStorage.getItem("screens"));
-		$.each(screens, function(key, screen) {
-			$.get("http://dcssquared.com:69/getUser/?uuid=" + device.uuid + "&screen_name=" + screen, function success(data){
-		    
-			answer = data.split(","); 
-			$('#dmPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[1]));
-			$('#mentionsPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[2]));
-			$('#followersPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[3]));
-			$('#retweetedPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[4]));
-		
-			});
-				
-			});
-		if (screens){
-		 numAccounts = screens.length
-			console.log('numacc: ' + (numAccounts).toString());
-		}
-$('.checkboxxy').click(function () {
-			console.log('test');
-			$.get("http://dcssquared.com:69/updateUser/?uuid=" + device.uuid + "&screen_name=" + $(this).data("name")
-			+ "&" + $(this).attr('id') + "=" + ($(this).is(':checked')).toString())
-			, function(data, status){
-				//alert(data);
-				}
-			
-		});
-		if (typeof console  != "undefined") 
-			if (typeof console.log != 'undefined')
-				console.olog = console.log;
-			else
-				console.olog = function() {};
+        function screenMentions() {
+            alert('mentions');
+        }
 
-		console.log = function(message) {
-			console.olog(message);
-			$('#result').prepend('<p>' + message + '</p>');
-		};
-		window.onerror = function(message, url, linenumber) {
-			console.log("JavaScript error: " + message + " on line " + 
-					linenumber + " for " + url);
-		}
-		console.error = console.debug = console.info =  console.log 
+        function doPushes(screen) {
+            push = PushNotification.init({
+                android: {
+                    senderID: "1020948189731"
+                },
+                "ios": {
+                    "senderID": "1020948189731",
+                    "gcmSandbox": true,
+                    "alert": "true",
+                    "badge": "true",
+                    "sound": "true"
+                },
+                windows: {}
+            });
+            /*
+            		push.unregister(function success(data)
+            		{
+            		alert('unreg');
+            		}, 
+            		function(data){
+            		alert('still reg ' + data);
+            		}, 
+            		"test");*/
+            done = false;
+            push.on('registration', function(data) {
+                console.log('registered screen: ' + screen + ' and reg: ' + data.registrationId);
+                if (done == false) {
+                    done = true;
 
-		console.log('test');
-var interval; // for setting intervals.
+                    screens = JSON.parse(localStorage.getItem("screens"));
+                    $.each(screens, function(key, value) {
 
-	var id;
-	// check if we already have access tokens
-	if(localStorage.getItem("screens")) {
-	console.log('screens exist');
-		// then directly setToken() and read the timeline
-		//addUser();
-		screens = JSON.parse(localStorage.getItem("screens"));
-								$.each(screens, function(key, value) {
-									console.log(key + ' ' + value);
-									screen = value;
-									
-			doPushes(value);
-			 $('#switches').show();
-				if (key >= 1){
-					$('#mastaSwitches').append($('#switches').clone());
-					
-				}
-				$('#name:last').html("<h1>" + screen + "</h1><button onclick='logout(\"" + screen + "\");'>Log Out</button>");
-				$('#switches:last').attr("data-name", screen );
-				$('#dmPush:last').attr("data-name", screen );
-				$('#mentionsPush:last').attr("data-name", screen );
-				$('#followersPush:last').attr("data-name", screen );
-				$('#retweetedPush:last').attr("data-name", screen );
-			
-									$.get("http://dcssquared.com:69/getUser/?uuid=" + device.uuid + "&screen_name=" + value, function success(data){
-		    
-			answer = data.split(","); 
-			$('#dmPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[1]));
-			$('#mentionsPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[2]));
-			$('#followersPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[3]));
-			$('#retweetedPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[4]));
-		
-			});
-								});
-									
+                        $.get("http://dcssquared.com:69/addUser/?reg=" + data.registrationId + "&uuid=" + device.uuid + "&screen_name=" + value, function success(data) {});
+                    });
+                }
+            });
 
-		/*cb.setToken(localStorage.getItem(screen_name + "-accessToken");, localStorage.getItem(screen_name + "-tokenSecret"););
-		showHomeTimeline(20);
-		cb.__call(
-			"statuses_mentionsTimeline", {"count": "1"},
-			function (reply) {
-				for(var key in reply){
-					autoReply(reply[key].id, reply[key].user["screen_name"]); // auto reply to the tweet where I'm mentioned.
-					id = reply[key].id;
-				}
-			}						
-		);
-		// now poll periodically and send an auto-reply when we are mentioned.
-		fetchTweets(id);*/
-	} else { // authorize the user and ask her to get the pin.
-		
-		console.log('empty screenz');
-			localStorage.setItem("screens", JSON.stringify([]));
-		
-	}
+            push.on('notification', function(data) {
+                //alert('datascreen:' + data.additionalData['screen']);
+                $.each(data.additionalData, function(key, value) {
+                    //alert(key + ' ' + value);
+                });
+                if (data.additionalData['screen'] == 'mentions') {
+                    //screenMentions();
+                } else if (data.additionalData['screen'] == 'dms') {
+                    //screenDms();
+                }
+                $('#result').prepend(data['title'] + ": " + data['message']);
+                navigator.notification.alert(
+                    data['message'], // message
+                    alertDismissed, // callback
+                    "To: " + data.additionalData['to'] + ", " + data['title'], // title
+                    'w00t' // buttonName
+                );
+            });
 
-	
-/* thanks to  amwelles / widget.html (https://gist.github.com/amwelles/5776750)
- * for the following function.
- * simple and elegant.
- */
+            push.on('error', function(e) {
+                $('#result').prepend(e.message);
+            });
+        }
 
-/*
-function showHomeTimeline(count) {
-	cb.__call(
-		"statuses_homeTimeline", {"count": count},
-		function(reply) {
-			for (var key in reply) {
-				$('#homeTimeline').prepend('<li><p>' + reply[key].user["screen_name"] +': ' + parseText(reply[key].text) +'</p></li>');
-			}
-		}
-	);
-}
+        function stringToBoolean(string) {
+            switch (string.toLowerCase().trim()) {
+                case "true":
+                case "yes":
+                case "1":
+                    return true;
+                case "false":
+                case "no":
+                case "0":
+                case null:
+                    return false;
+                default:
+                    return Boolean(string);
+            }
+        }
 
-function showUserTimeline() {
-	cb.__call(
-		"statuses_userTimeline", {"count": "5"}, 
-		function(reply) {
-			for (var key in reply) {
-				$('#userTimeline').prepend('<li><p>' + reply[key].user["screen_name"] +': ' + parseText(reply[key].text) +'</p></li>');
-			}
-		}
-	);
-}
+        function onDeviceReady() {
+            console.log('ondeviceready fired');
 
-function autoReply(id, name) {
-	var params = {
-		"in_reply_to_status_id": id,
-		"status": "@" + name + " Hi, I'm driving, I'll get back to you ASAP!"
-	};
-	cb.__call(
-		"statuses_update", params,
-		function(reply) {
-			// something will go here
-		}
-	);
-}
+            screens = JSON.parse(localStorage.getItem("screens"));
+            $.each(screens, function(key, screen) {
+                $.get("http://dcssquared.com:69/getUser/?uuid=" + device.uuid + "&screen_name=" + screen, function success(data) {
 
-function fetchTweets(id) {
-	$.ajaxSetup({
-		cache: false
-	});
-	var params = {
-		"include_rts": "1",
-		"count": "5",
-		"since_id": id
-	};
-	var home = setInterval(function() {showHomeTimeline(5)}, 300000);
-	// get at most five most recent mentions.
-	var ref = setInterval(
-		function() {
-			cb.__call(
-				"statuses_mentionsTimeline", params,
-				function (reply) {
-					if(reply){
-						for(var key in reply){
-							autoReply(reply[key].id, reply[key].user["screen_name"]); // auto reply to the tweet where I'm mentioned.
-						}
-					}
-				}
-			);
-	}, 300000);
-}
-*/
-function loadOption(href, id) {
-	// load the page irrespective of what it is.
-	$('#LoadMe').load(href).hide().fadeIn("slow");
-	// then check what it is and load the content accordingly.
-	if(Number(id) == 1) {
-		clearInterval(interval);
-		showHomeTimeline(5);
-		interval = setInterval(function() {showHomeTimeline()}, 300000);
-	} else if(Number(id) == 2) {
-		clearInterval(interval);
-		showUserTimeline();
-		interval = setInterval(function() {showUserTimeline()}, 300000);
-	} else {
-		// this is a placeholder for now.
-	} 
-}
-}
-		$(document).ready(function() {
-		
-		document.addEventListener("deviceready", onDeviceReady, false);
-/*
-function sendTweet() {
-	var param = {"status": $('#tweet').val()};
-	cb.__call(
-		"statuses_update", param,
-		function(reply) {
-			// somethimg here
-		}
-	);
-	$('#LoadMe').load("me.html").hide().fadeIn("slow");
-	showUserTimeline();
-}
-*/
+                    answer = data.split(",");
+                    $('#dmPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[1]));
+                    $('#mentionsPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[2]));
+                    $('#followersPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[3]));
+                    $('#retweetedPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[4]));
 
-		console.log('running2...');
-		
-});
-		</script>
-    </body>
+                });
+
+            });
+            if (screens) {
+                numAccounts = screens.length
+                console.log('numacc: ' + (numAccounts).toString());
+            }
+            $('.checkboxxy').click(function() {
+                console.log('test');
+                $.get("http://dcssquared.com:69/updateUser/?uuid=" + device.uuid + "&screen_name=" + $(this).data("name") +
+                        "&" + $(this).attr('id') + "=" + ($(this).is(':checked')).toString()),
+                    function(data, status) {
+                        //alert(data);
+                    }
+
+            });
+            if (typeof console != "undefined")
+                if (typeof console.log != 'undefined')
+                    console.olog = console.log;
+                else
+                    console.olog = function() {};
+
+            console.log = function(message) {
+                console.olog(message);
+                $('#result').prepend('<p>' + message + '</p>');
+            };
+            window.onerror = function(message, url, linenumber) {
+                console.log("JavaScript error: " + message + " on line " +
+                    linenumber + " for " + url);
+            }
+            console.error = console.debug = console.info = console.log
+
+            console.log('test');
+            var interval; // for setting intervals.
+
+            var id;
+            // check if we already have access tokens
+            if (localStorage.getItem("screens")) {
+                console.log('screens exist');
+                // then directly setToken() and read the timeline
+                //addUser();
+                screens = JSON.parse(localStorage.getItem("screens"));
+                $.each(screens, function(key, value) {
+                    console.log(key + ' ' + value);
+                    screen = value;
+
+                    doPushes(value);
+                    $('#switches').show();
+                    if (key >= 1) {
+                        $('#mastaSwitches').append($('#switches').clone());
+
+                    }
+                    $('#name:last').html("<h1>" + screen + "</h1><button onclick='logout(\"" + screen + "\");'>Log Out</button>");
+                    $('#switches:last').attr("data-name", screen);
+                    $('#dmPush:last').attr("data-name", screen);
+                    $('#mentionsPush:last').attr("data-name", screen);
+                    $('#followersPush:last').attr("data-name", screen);
+                    $('#retweetedPush:last').attr("data-name", screen);
+
+                    $.get("http://dcssquared.com:69/getUser/?uuid=" + device.uuid + "&screen_name=" + value, function success(data) {
+
+                        answer = data.split(",");
+                        $('#dmPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[1]));
+                        $('#mentionsPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[2]));
+                        $('#followersPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[3]));
+                        $('#retweetedPush[data-name="' + answer[0] + '"]').prop('checked', stringToBoolean(answer[4]));
+
+                    });
+                });
+
+
+                /*cb.setToken(localStorage.getItem(screen_name + "-accessToken");, localStorage.getItem(screen_name + "-tokenSecret"););
+                showHomeTimeline(20);
+                cb.__call(
+                	"statuses_mentionsTimeline", {"count": "1"},
+                	function (reply) {
+                		for(var key in reply){
+                			autoReply(reply[key].id, reply[key].user["screen_name"]); // auto reply to the tweet where I'm mentioned.
+                			id = reply[key].id;
+                		}
+                	}						
+                );
+                // now poll periodically and send an auto-reply when we are mentioned.
+                fetchTweets(id);*/
+            } else { // authorize the user and ask her to get the pin.
+
+                console.log('empty screenz');
+                localStorage.setItem("screens", JSON.stringify([]));
+
+            }
+
+
+            /* thanks to  amwelles / widget.html (https://gist.github.com/amwelles/5776750)
+             * for the following function.
+             * simple and elegant.
+             */
+
+            /*
+            function showHomeTimeline(count) {
+            	cb.__call(
+            		"statuses_homeTimeline", {"count": count},
+            		function(reply) {
+            			for (var key in reply) {
+            				$('#homeTimeline').prepend('<li><p>' + reply[key].user["screen_name"] +': ' + parseText(reply[key].text) +'</p></li>');
+            			}
+            		}
+            	);
+            }
+
+            function showUserTimeline() {
+            	cb.__call(
+            		"statuses_userTimeline", {"count": "5"}, 
+            		function(reply) {
+            			for (var key in reply) {
+            				$('#userTimeline').prepend('<li><p>' + reply[key].user["screen_name"] +': ' + parseText(reply[key].text) +'</p></li>');
+            			}
+            		}
+            	);
+            }
+
+            function autoReply(id, name) {
+            	var params = {
+            		"in_reply_to_status_id": id,
+            		"status": "@" + name + " Hi, I'm driving, I'll get back to you ASAP!"
+            	};
+            	cb.__call(
+            		"statuses_update", params,
+            		function(reply) {
+            			// something will go here
+            		}
+            	);
+            }
+
+            function fetchTweets(id) {
+            	$.ajaxSetup({
+            		cache: false
+            	});
+            	var params = {
+            		"include_rts": "1",
+            		"count": "5",
+            		"since_id": id
+            	};
+            	var home = setInterval(function() {showHomeTimeline(5)}, 300000);
+            	// get at most five most recent mentions.
+            	var ref = setInterval(
+            		function() {
+            			cb.__call(
+            				"statuses_mentionsTimeline", params,
+            				function (reply) {
+            					if(reply){
+            						for(var key in reply){
+            							autoReply(reply[key].id, reply[key].user["screen_name"]); // auto reply to the tweet where I'm mentioned.
+            						}
+            					}
+            				}
+            			);
+            	}, 300000);
+            }
+            */
+            function loadOption(href, id) {
+                // load the page irrespective of what it is.
+                $('#LoadMe').load(href).hide().fadeIn("slow");
+                // then check what it is and load the content accordingly.
+                if (Number(id) == 1) {
+                    clearInterval(interval);
+                    showHomeTimeline(5);
+                    interval = setInterval(function() {
+                        showHomeTimeline()
+                    }, 300000);
+                } else if (Number(id) == 2) {
+                    clearInterval(interval);
+                    showUserTimeline();
+                    interval = setInterval(function() {
+                        showUserTimeline()
+                    }, 300000);
+                } else {
+                    // this is a placeholder for now.
+                }
+            }
+        }
+        $(document).ready(function() {
+
+            document.addEventListener("deviceready", onDeviceReady, false);
+            /*
+            function sendTweet() {
+            	var param = {"status": $('#tweet').val()};
+            	cb.__call(
+            		"statuses_update", param,
+            		function(reply) {
+            			// somethimg here
+            		}
+            	);
+            	$('#LoadMe').load("me.html").hide().fadeIn("slow");
+            	showUserTimeline();
+            }
+            */
+
+            console.log('running2...');
+
+        });
+    </script>
+</body>
+
 </html>
